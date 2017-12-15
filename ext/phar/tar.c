@@ -102,7 +102,7 @@ int phar_is_tar(char *buf, char *fname) /* {{{ */
 	tar_header *header = (tar_header *) buf;
 	uint32_t checksum = phar_tar_number(header->checksum, sizeof(header->checksum));
 	uint32_t ret;
-	char save[sizeof(header->checksum)], *bname;
+	char save[sizeof(header->checksum)+1], *bname;
 
 	/* assume that the first filename in a tar won't begin with <?php */
 	if (!strncmp(buf, "<?php", sizeof("<?php")-1)) {
@@ -110,6 +110,7 @@ int phar_is_tar(char *buf, char *fname) /* {{{ */
 	}
 
 	memcpy(save, header->checksum, sizeof(header->checksum));
+    save[sizeof(header->checksum)+1] = 0;
 	memset(header->checksum, ' ', sizeof(header->checksum));
 	ret = (checksum == phar_tar_checksum(buf, 512));
 	memcpy(header->checksum, save, sizeof(header->checksum));
